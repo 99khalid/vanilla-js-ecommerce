@@ -1,102 +1,73 @@
-let cartContainer = document.getElementById('cartContainer')
-let xobjs = localStorage.getItem('myArray')
+// Cart page: lists items in the cart, lets the user remove them and place the order.
 
-var objs = JSON.parse(xobjs || [])
+const cartContainer = document.getElementById('cartContainer');
+const totalItemsLabel = document.getElementById('totalItem');
 
+function renderCart() {
+  const cart = getCart();
+  cartContainer.innerHTML = '';
+  totalItemsLabel.textContent = 'Total Items: ' + cart.length;
 
-var x=objs.length
-document.getElementById("badge").innerHTML = x
-document.getElementById("totalItem").innerHTML = ('Total Items: ' + x)
+  const itemsContainer = document.createElement('div');
+  itemsContainer.id = 'boxContainer';
 
+  let totalAmount = 0;
 
+  cart.forEach((product, index) => {
+    totalAmount += product.price;
 
-document.addEventListener('DOMContentLoaded',()=>{
-    let boxContainerDiv = document.createElement('div')
-    boxContainerDiv.id = 'boxContainer'
-var ax=0;
-    for(var i of objs){
-        ax=ax+i.price;
-        let boxDiv = document.createElement('div')
-        boxDiv.id = 'box'
-        let boxImg = document.createElement('img')
-        let boxh3 = document.createElement('h3')
-        let h3Text = document.createTextNode(i.title)
-        boxh3.appendChild(h3Text)
+    const item = document.createElement('div');
+    item.id = 'box';
 
-        let boxh4 = document.createElement('h4')
-        let h4Text = document.createTextNode('price:' + i.price)
-        boxh4.appendChild(h4Text)
-        h4Text.id="pr"
-        boxImg.src=`${i.thumbnail}`
-        
-       let aa=document.createElement('button')
-        aa.id="aa"
-        aa.textContent="Remove"
-        aa.onclick=function(){
-            boxDiv.remove();
-            objs.splice(i,1);
-            localStorage.setItem('myArray', JSON.stringify(objs));
-            var x=objs.length
-document.getElementById("badge").innerHTML = x
-document.getElementById("totalItem").innerHTML = ('Total Items: ' + x)
+    const image = document.createElement('img');
+    image.src = product.thumbnail;
+    image.alt = product.title;
 
+    const title = document.createElement('h3');
+    title.textContent = product.title;
 
-location.reload(true);
+    const price = document.createElement('h4');
+    price.textContent = 'Price: $ ' + product.price;
 
+    const removeButton = document.createElement('button');
+    removeButton.id = 'aa';
+    removeButton.textContent = 'Remove';
+    removeButton.onclick = function () {
+      const updatedCart = getCart();
+      updatedCart.splice(index, 1);
+      saveCart(updatedCart);
+      renderCart();
+    };
+
+    item.append(image, title, price, removeButton);
+    itemsContainer.appendChild(item);
+  });
+
+  cartContainer.appendChild(itemsContainer);
+
+  const totalContainer = document.createElement('div');
+  totalContainer.id = 'totalContainer';
+
+  const total = document.createElement('div');
+  total.id = 'total';
+
+  const totalTitle = document.createElement('h2');
+  totalTitle.textContent = 'Total Amount';
+
+  const totalValue = document.createElement('h4');
+  totalValue.textContent = 'Amount: $ ' + totalAmount;
+
+  const placeOrderButton = document.createElement('button');
+  placeOrderButton.id = 'palce';
+  placeOrderButton.textContent = 'Place Order';
+  placeOrderButton.disabled = cart.length === 0;
+  placeOrderButton.onclick = function () {
+    window.location.href = 'orderPlaced.html';
+  };
+
+  total.append(totalTitle, totalValue, placeOrderButton);
+  totalContainer.appendChild(total);
+  cartContainer.appendChild(totalContainer);
 }
 
-        boxDiv.append(boxImg,boxh3,boxh4,aa)
-        boxContainerDiv.append(boxDiv)
-        cartContainer.append(boxContainerDiv)
-    }
-    let totalContainerDiv=document.createElement('div')
-    totalContainerDiv.id = 'totalContainer'
-
-    let totalDiv = document.createElement('div')
-    totalDiv.id = 'total'
-
-    let totalh2 = document.createElement('h2')
-
-    let h2Text = document.createTextNode('Total Amount')
-    totalh2.append(h2Text)
-    totalDiv.append(totalh2)
-    totalContainerDiv.append(totalDiv)
-    cartContainer.append(totalContainerDiv)
-    let totalh4 = document.createElement('h4')
-    var totalh4Text = document.createTextNode('Amount: Rs ' + ax)
-    totalh4Text.id = 'toth4'
-    totalh4.appendChild(totalh4Text)
-    totalDiv.appendChild(totalh4)
-    totalDiv.appendChild(buttonDiv)})
-
-   buttonDiv=document.createElement('button')
-   buttonDiv.id="palce"
-   buttonDiv.textContent="Place Order"
-   buttonDiv.onclick=function(){
-    window.location.href="orderPlaced.html"; 
-
-   }
-
-
-
-
-
-
-
-
-
-
-
-
-    let lo = localStorage.getItem('user');
-    let loo = JSON.parse(lo);
-    let us=document.getElementById('us')
-    us.innerHTML=loo
-
-
-    const menuIcon = document.getElementById('menuIcon');
-        const menu = document.getElementById('menu');
-        
-        menuIcon.addEventListener('click', () => {
-          menu.classList.toggle('hidden');
-        });
+renderCart();

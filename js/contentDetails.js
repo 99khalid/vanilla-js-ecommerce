@@ -1,163 +1,79 @@
-let xxx=localStorage.getItem('ob')
- let contentDetails=JSON.parse(xxx);
- dynamicContentDetails(contentDetails)
+// Product details page: shows the product picked on the list page and adds it to the cart.
 
- 
-console.clear()
-let kh=document.getElementById('uss')
-let kd=localStorage.getItem('user')
-let kdd=JSON.parse(kd)
-kh.innerHTML=kdd
-let xobjs = localStorage.getItem('myArray')
+function renderProductDetails(product) {
+  const container = document.createElement('div');
+  container.id = 'containerD';
 
-var objs = JSON.parse(xobjs || [])
+  const imageSection = document.createElement('div');
+  imageSection.id = 'imageSection';
 
+  const mainImage = document.createElement('img');
+  mainImage.id = 'imgDetails';
+  mainImage.src = product.thumbnail;
+  mainImage.alt = product.title;
+  imageSection.appendChild(mainImage);
 
-var x=objs.length
-document.getElementById("badge").innerHTML = x
+  const productDetails = document.createElement('div');
+  productDetails.id = 'productDetails';
 
-let id = location.search.split('?')[1]
-console.log(id)
+  const title = document.createElement('h1');
+  title.textContent = product.title;
 
+  const brand = document.createElement('h4');
+  brand.textContent = product.brand || '';
 
+  const details = document.createElement('div');
+  details.id = 'details';
 
+  const price = document.createElement('h3');
+  price.textContent = '$ ' + product.price;
 
-function dynamicContentDetails(ob)
-{
-    let mainContainer = document.createElement('div')
-    mainContainer.id = 'containerD'
-    document.getElementById('containerProduct').appendChild(mainContainer);
+  const descriptionTitle = document.createElement('h3');
+  descriptionTitle.textContent = 'Description';
 
-    let imageSectionDiv = document.createElement('div')
-    imageSectionDiv.id = 'imageSection'
+  const description = document.createElement('p');
+  description.textContent = product.description;
 
-    let imgTag = document.createElement('img')
-     imgTag.id = 'imgDetails'
-     imgTag.src = ob.thumbnail
+  details.append(price, descriptionTitle, description);
 
-    imageSectionDiv.appendChild(imgTag)
+  const preview = document.createElement('div');
+  preview.id = 'productPreview';
 
-    let productDetailsDiv = document.createElement('div')
-    productDetailsDiv.id = 'productDetails'
+  const previewTitle = document.createElement('h3');
+  previewTitle.textContent = 'Product Preview (rating: ' + product.rating + ')';
+  preview.appendChild(previewTitle);
 
+  for (const imageUrl of product.images) {
+    const previewImage = document.createElement('img');
+    previewImage.id = 'previewImg';
+    previewImage.src = imageUrl;
+    previewImage.onclick = function () {
+      mainImage.src = imageUrl;
+    };
+    preview.appendChild(previewImage);
+  }
 
-    let h1 = document.createElement('h1')
-    let h1Text = document.createTextNode(ob.title)
-    h1.appendChild(h1Text)
+  const buttonWrapper = document.createElement('div');
+  buttonWrapper.id = 'button';
 
-    let h4 = document.createElement('h4')
-    let h4Text = document.createTextNode(ob.brand)
-    h4.appendChild(h4Text)
-    console.log(h4);
+  const addToCartButton = document.createElement('button');
+  addToCartButton.textContent = 'Add to Cart';
+  addToCartButton.onclick = function () {
+    const cart = getCart();
+    cart.push(product);
+    saveCart(cart);
+  };
+  buttonWrapper.appendChild(addToCartButton);
 
-    let detailsDiv = document.createElement('div')
-    detailsDiv.id = 'details'
-
-    let h3DetailsDiv = document.createElement('h3')
-    let h3DetailsText = document.createTextNode('Rs ' + ob.price)
-    h3DetailsDiv.appendChild(h3DetailsText)
-
-    let h3 = document.createElement('h3')
-    let h3Text = document.createTextNode('Description')
-    h3.appendChild(h3Text)
-
-    let para = document.createElement('p')
-    let paraText = document.createTextNode(ob.description)
-    para.appendChild(paraText)
-
-    let productPreviewDiv = document.createElement('div')
-    productPreviewDiv.id = 'productPreview'
-
-    let h3ProductPreviewDiv = document.createElement('h3')
-    let h3ProductPreviewText = document.createTextNode('Product Preview:'+ob.rating)
-    h3ProductPreviewDiv.appendChild(h3ProductPreviewText)
-    productPreviewDiv.appendChild(h3ProductPreviewDiv)
-
-    let i;
-    for(i=0; i<ob.images.length; i++)
-    {
-        let imgTagProductPreviewDiv = document.createElement('img')
-        imgTagProductPreviewDiv.id = 'previewImg'
-        imgTagProductPreviewDiv.src = ob.images[i]
-        imgTagProductPreviewDiv.onclick = function(event)
-        {
-            console.log("clicked" + this.src)
-            imgTag.src = ob.images[i]
-            document.getElementById("imgDetails").src = this.src 
-            
-        }
-        productPreviewDiv.appendChild(imgTagProductPreviewDiv)
-    }
-
-    let buttonDiv = document.createElement('div')
-    buttonDiv.id = 'button'
-
-    let buttonTag = document.createElement('button')
-    buttonDiv.appendChild(buttonTag)
-
-    buttonText = document.createTextNode('Add to Cart')
-    buttonTag.onclick  =   function()
-    {
-     
-
-        let existingArray = JSON.parse(localStorage.getItem('myArray')) || [];
-
-        existingArray.push(ob);
-
-        localStorage.setItem('myArray', JSON.stringify(existingArray));
-        let xxobjs = localStorage.getItem('myArray')
-
-        var ddobjs = JSON.parse(xxobjs || [])
-        
-        
-        var xxx=ddobjs.length
-        document.getElementById("badge").innerHTML = xxx        
-        
-    }
-    buttonTag.appendChild(buttonText)
-
-
-    console.log(mainContainer.appendChild(imageSectionDiv));
-    mainContainer.appendChild(imageSectionDiv)
-    mainContainer.appendChild(productDetailsDiv)
-    productDetailsDiv.appendChild(h1)
-    productDetailsDiv.appendChild(h4)
-    productDetailsDiv.appendChild(detailsDiv)
-    detailsDiv.appendChild(h3DetailsDiv)
-    detailsDiv.appendChild(h3)
-    detailsDiv.appendChild(para)
-    productDetailsDiv.appendChild(productPreviewDiv)
-    
-    
-    productDetailsDiv.appendChild(buttonDiv)
-
-
-    return mainContainer
+  productDetails.append(title, brand, details, preview, buttonWrapper);
+  container.append(imageSection, productDetails);
+  document.getElementById('containerProduct').appendChild(container);
 }
 
+const selectedProduct = readJson(SELECTED_PRODUCT_KEY, null);
 
-
-// let httpRequest = new XMLHttpRequest()
-// {
-//     httpRequest.onreadystatechange = function()
-//     {
-//         if(this.readyState === 4 && this.status == 200)
-//         {
-//             console.log('connected!!');
-//             let contentDetails = JSON.parse(this.responseText)
-//             {
-//                 console.log(contentDetails);
-//                 dynamicContentDetails(contentDetails)
-//             }
-//         }
-//         else
-//         {
-//             console.log('not connected!');
-//         }
-//     }
-// }
-
-// httpRequest.open('GET', 'https://dummyjson.com/products/'+id, true)
-// httpRequest.send()  
-
-
+if (selectedProduct) {
+  renderProductDetails(selectedProduct);
+} else {
+  window.location.href = 'content.html';
+}

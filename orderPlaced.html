@@ -97,7 +97,7 @@ button a:focus
                             <a href="cart.html"> <i class="fas fa-shopping-cart addedToCart"><div id="badge"> 0 </div></i></a>
                            <pre>              </pre>
                             <a href="#" id="menuIcon"> <i class="fas fa-user-circle userIcon"></i> </a>
-                            <p id="uss" style="color: black; font-size: 20px; margin-right: 100px;">khalid</p>
+                            <p id="uss" style="color: black; font-size: 20px; margin-right: 100px;"></p>
                         </div>
                         <div id="menu" class="hidden">
                             <a href="sign.html">Log out</a>
@@ -159,25 +159,6 @@ button a:focus
         </div>
       
 </body>
-<script>
-let xobjs = localStorage.getItem('myArray')
-
-var objs = JSON.parse(xobjs || [])
-objs.splice(0, objs.length);
-localStorage.setItem('myArray', JSON.stringify(objs));
-
-    document.cookie = "orderId="+0 +",counter="+0
-    let kh=document.getElementById('uss')
-let kd=localStorage.getItem('user')
-let kdd=JSON.parse(kd)
-kh.innerHTML=kdd
-
-
-const menuIcon = document.getElementById('menuIcon');
-        const menu = document.getElementById('menu');
-        
-        menuIcon.addEventListener('click', () => {
-          menu.classList.toggle('hidden');
-        });
-</script>
+<script src="js/common.js"></script>
+<script src="js/orderPlaced.js"></script>
 </html>
